@@ -11,12 +11,14 @@ import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import axios from "axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Login() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const queryClient = useQueryClient();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -34,6 +36,7 @@ export default function Login() {
       );
       localStorage.setItem("token", res.data?.data?.token);
       localStorage.setItem("user", JSON.stringify(res.data?.data.user));
+      queryClient.invalidateQueries({ queryKey: ["contests"] });
       window.location.href = "/";
     } catch (err: any) {
       setError(err.response?.data?.message || "Login failed");
@@ -82,7 +85,7 @@ export default function Login() {
 
             <p className="text-sm text-center mt-2">
               Don't have an account?{" "}
-              <a href="/register" className="text-primary underline">
+              <a href="/signup" className="text-primary underline">
                 Sign Up
               </a>
             </p>
